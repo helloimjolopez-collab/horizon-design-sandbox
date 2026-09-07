@@ -7882,7 +7882,6 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
   function apPanel(w){
     var sel=apSel(w),grand=apTotalDue(w),bd=apBandData(w),n=apData(w).length;
     var out='<div class="ap-panel">';
-    out+='<div class="ap-sum-sub">How much cash is needed, and when. Pick a band to filter the invoice list.</div>';
     var allSel=(sel==="total");
     out+='<button class="ap-sum-row ap-sum-all'+(allSel?" sel":"")+'" data-action="ap-set-due" data-due="total" data-id="'+w.id+'" aria-pressed="'+allSel+'"><span class="ap-sum-main"><span class="ap-sum-lbl">'+ICON("account_balance_wallet")+'All due dates</span><span class="ap-sum-meta">'+n+' invoice'+(n===1?"":"s")+' outstanding</span></span><span class="ap-sum-val">'+apMoney(grand)+'</span></button>';
     AP_BANDS.forEach(function(b){var d=bd[b.id],over=(b.id==="overdue"),has=d.count>0,frac=grand>0?d.total/grand:0,isSel=(sel===b.id);
