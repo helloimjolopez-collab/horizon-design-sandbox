@@ -2796,7 +2796,7 @@ function penGlance(w){
   var tot=penTotal(w),na=penApptCount(w),np=penPlanCount(w),d=penDist(w),lead=(d==="All Districts")?"all districts":d.toLowerCase();
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="dep-hd-kpigrp"><span class="metric-value">'+penMoney(tot)+'</span>'+penBadge(w)+'</div>'+
-    '<div class="gl-sub"><span class="pen-caption">contributed a year across '+np+' plan'+(np===1?"":"s")+', '+lead+'</span></div>'+
+    ''+
     '<span class="sr-only">Annual pension contribution '+penMoney(tot)+' across '+np+' plans and '+na+' active appointees, '+lead+'.</span>'+
   '</div></div>';
 }
@@ -3152,7 +3152,7 @@ function penFGlance(w){
   var tot=penFTotal(w),na=penFApptCount(w),np=penFPlanCount(w),d=penFDist(w),lead=(d==="All Districts")?"all districts":d.toLowerCase();
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="dep-hd-kpigrp"><span class="metric-value">'+penFMoney(tot)+'</span>'+penFBadge(w)+'</div>'+
-    '<div class="gl-sub"><span class="pen-caption">contributed a year across '+np+' plan'+(np===1?"":"s")+', '+lead+'</span></div>'+
+    ''+
     '<span class="sr-only">Annual pension contribution '+penFMoney(tot)+' across '+np+' plans and '+na+' active appointees, '+lead+'.</span>'+
   '</div></div>';
 }
@@ -4670,7 +4670,7 @@ function loanGlance(w){
   var read="";
   if(tot>0){
     var call=(over>0&&worst&&worst.key!=="cur")
-      ?'<span class="loan-glance-cap"><span class="loan-sevdot" style="background:var('+worst.color+')"></span>'+loanMoney(worst.total)+' in '+worst.label+', the most overdue with a balance</span>'
+      ?'<span class="loan-glance-cap"><span class="loan-sevdot" style="background:var('+worst.color+')"></span>'+loanMoney(worst.total)+' in '+worst.label+'</span>'
       :'<span class="loan-glance-cap loan-cap-ok">'+ICON("check")+'Every loan is current</span>';
     read='<div class="loan-glance-read">'+loanStackBar(w)+call+'</div>';
   }
@@ -7655,7 +7655,7 @@ document.addEventListener("mousemove",function(e){var row=e.target.closest&&e.ta
   function ptoGlance(w){
     if(w.state==="empty")return '<div class="kpi-row"><div class="kpi-num"><span class="scope-chip" style="cursor:default"><span class="sc-nm">No departments</span></span><div class="metric-value">0</div><div class="gl-sub"><span class="pto-caption">no approval rights</span></div></div></div>';
     var pend=ptoPending(w);
-    return '<div class="kpi-row"><div class="kpi-num"><span class="scope-chip" style="cursor:default"><span class="sc-nm">'+ptoCurYear(w)+'</span></span><div class="metric-value">'+pend.records+'</div><div class="gl-sub"><span class="pto-caption">'+(pend.records?('pending, across '+pend.employees+' employee'+(pend.employees===1?"":"s")):'nothing awaiting approval')+'</span></div></div></div>';}
+    return '<div class="kpi-row"><div class="kpi-num"><span class="scope-chip" style="cursor:default"><span class="sc-nm">'+ptoCurYear(w)+'</span></span><div class="metric-value">'+pend.records+'</div><div class="gl-sub">'+(pend.records?('<span class="bank-pill">'+ICON("groups")+pend.employees+' employee'+(pend.employees===1?"":"s")+'</span>'):'<span class="pto-caption">nothing awaiting approval</span>')+'</div></div></div>';}
   function ptoContent(w){
     if(w.size==="kpi")return ptoGlance(w);
     if(w.state==="empty")return ptoNoAccessState();
