@@ -7005,7 +7005,7 @@ function arGlance(w){
   }
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="dep-hd-kpigrp"><span class="metric-value">'+money(tot)+'</span>'+arOverduePill(w)+'</div>'+
-    '<div class="gl-sub"><span class="bgt-caption">owed to you across '+n+' unpaid invoice'+(n===1?"":"s")+'</span></div>'+
+    ''+
     read+
     '<span class="sr-only">'+arAgeSr(w)+'</span>'+
   '</div></div>';
@@ -7325,7 +7325,7 @@ function arFGlance(w){
   }
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="dep-hd-kpigrp"><span class="metric-value">'+money(tot)+'</span>'+arFOverduePill(w)+'</div>'+
-    '<div class="gl-sub"><span class="bgt-caption">owed to you across '+n+' unpaid invoice'+(n===1?"":"s")+'</span></div>'+
+    ''+
     read+
     '<span class="sr-only">'+arFAgeSr(w)+'</span>'+
   '</div></div>';
