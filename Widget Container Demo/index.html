@@ -7818,7 +7818,10 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
     return '<button class="filter-chip ap-due-chip" data-action="ap-due" data-id="'+w.id+'" aria-haspopup="listbox" aria-expanded="'+(pop&&pop.type==="ap-due"&&pop.id===w.id?"true":"false")+'" aria-label="Filter by due date, currently '+apEsc(apSelLabel(w))+'"><span class="fc-label">'+spin+apSelLabel(w)+'</span>'+ICON("expand_more")+'</button>';}
 
   /* KPI badge: overdue money (warn) or a positive "Nothing overdue". */
-  function apBadge(w){var od=apOverdueTotal(w);if(od>0){var n=apOverdueCount(w);return '<span class="ap-pill warn" data-tip="'+apMoney(od)+' across '+n+' invoice'+(n===1?"":"s")+' is past its due date." data-tip-plain>'+ICON("warning")+apMoney(od)+' overdue</span>';}return '<span class="ap-pill pos" data-tip="No outstanding invoice is past its due date." data-tip-plain>'+ICON("check_circle")+'Nothing overdue</span>';}
+  /* Compact "due this week" cash-timing signal for the glance/header KPI, beside the
+   overdue alarm. Shown only when something is due within the week. */
+function apWeekPill(w){var wk=apBandData(w).week;if(!wk||wk.total<=0)return "";return '<span class="ap-pill" data-tip="'+apEsc(apMoney(wk.total)+" across "+wk.count+" invoice"+(wk.count===1?"":"s")+" falls due this week.")+'" data-tip-plain>'+ICON("event")+apMoney(wk.total)+' due this week</span>';}
+function apBadge(w){var od=apOverdueTotal(w);if(od>0){var n=apOverdueCount(w);return '<span class="ap-pill warn" data-tip="'+apMoney(od)+' across '+n+' invoice'+(n===1?"":"s")+' is past its due date." data-tip-plain>'+ICON("warning")+apMoney(od)+' overdue</span>';}return '<span class="ap-pill pos" data-tip="No outstanding invoice is past its due date." data-tip-plain>'+ICON("check_circle")+'Nothing overdue</span>';}
 
   /* ---- header (Detail / Explore) : two-row .dep-hd ------------------- */
   /* Row 1: due-date chip (left), empty toggle slot (right). Row 2: total
@@ -7830,7 +7833,7 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
       numInner='<div class="dep-hd-kpigrp"><span class="sk" style="width:120px;height:22px;border-radius:6px"></span><span class="sk" style="width:110px;height:20px;border-radius:999px"></span></div>';
       ctx="Updating outstanding invoices…";
     }else{
-      numInner='<div class="dep-hd-kpigrp"><span class="metric-value">'+apMoney(apTotalDue(w))+'</span>'+apBadge(w)+'</div>';
+      numInner='<div class="dep-hd-kpigrp"><span class="metric-value">'+apMoney(apTotalDue(w))+'</span>'+apBadge(w)+apWeekPill(w)+'</div>';
     }
     return '<div class="dep-hd">'+
       '<div class="dep-hd-top">'+apDueChip(w)+'<div class="dep-hd-toggle"></div></div>'+
@@ -7916,7 +7919,7 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
     return '<div class="kpi-row"><div class="kpi-num">'+
       '<span class="scope-chip" style="cursor:default"><span class="sc-nm">Accounts payable</span></span>'+
       '<div class="metric-value">'+apMoney(tot)+'</div>'+
-      '<div class="gl-sub">'+apBadge(w)+'</div>'+
+      '<div class="gl-sub">'+apBadge(w)+apWeekPill(w)+'</div>'+
       '</div></div>';}
 
   /* ---- skeleton (table rows; loading is data-fetch only) ------------ */
