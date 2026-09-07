@@ -912,7 +912,6 @@
   .pr-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
   .pr-scope-chip{max-width:230px;}
   .pr-scope-chip .fc-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .pr-scope-ctx{font-size:11.5px;color:var(--txt-subtle);margin-top:2px;}
   .pr-distcol{flex:0 0 168px;min-width:0;display:flex;align-items:center;}
   .wt-head .pr-distcol{color:var(--txt-subtle);}
   .pr-dbadge{display:inline-flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--txt-secondary);}
@@ -6146,7 +6145,7 @@ document.addEventListener("mousemove",function(e){var row=e.target.closest&&e.ta
     var top='<div class="dep-hd-top"><div class="pr-tools">'+prFPeriodChip(w)+prFScopeChip(w)+'</div>'+(hideToggle?"":'<div class="dep-hd-toggle">'+prFToggle(w)+'</div>')+'</div>';
     if(noTotal)return '<div class="dep-hd">'+top+'</div>';
     var rows=prFTableRows(w),tot=rows.reduce(function(s,a){return s+a.net;},0),meta=prFScopeMeta(w);
-    var ctx=(meta.kind==="distpt")?('<div class="pr-scope-ctx">'+prFDistName(meta.dist)+', all pay types for the selected period</div>'):'';
+    var ctx='';
     return '<div class="dep-hd">'+top+'<div class="dep-hd-num"><span class="metric-value">'+money(tot)+'</span>'+ctx+'</div></div>';}
   function prFContent(w){
     if(w.state==="empty"){var ec=EMPTY_COPY.payroll,body='<div class="state" data-kind="empty">'+ICON("inbox")+'<div class="state-title">'+ec.title+'</div><div class="state-sub">'+ec.sub+'</div>'+(ec.cta?'<button class="btn outlined" data-action="'+ec.action+'" data-id="'+w.id+'">'+ICON("add")+ec.cta+'</button>':'')+'</div>';
