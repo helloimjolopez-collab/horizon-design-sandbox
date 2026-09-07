@@ -5825,7 +5825,7 @@ document.addEventListener("mousemove",function(e){var row=e.target.closest&&e.ta
     var chip='<button class="scope-chip" data-action="bgtF-scope" data-id="'+w.id+'" aria-haspopup="menu" aria-label="Account scope, tap to change"><span class="sc-nm">'+label+'</span>'+ICON("expand_more")+'</button>';
     if(!bgtFHasBudget(rows))return '<div class="kpi-row"><div class="kpi-num">'+chip+'<div class="metric-value" style="font-size:15px;color:var(--txt-subtle);font-weight:600">No budget set up</div></div></div>';
     var sv=bgtFSpanVariance(w,vt),v=sv.v,hv=bgtFHeadlineInner(v,neutral,sv.sumB);
-    return '<div class="kpi-row"><div class="kpi-num">'+chip+'<div class="metric-value bgtF-hl'+hv.cls+'">'+hv.html+'</div><div class="gl-sub">'+bgtFFavPill(v,neutral)+'<button class="bgt-caption bgtF-cap-btn" data-action="bgtF-span" data-id="'+w.id+'" aria-haspopup="listbox" aria-label="Comparison window, tap to change">vs. budget, '+bgtFSpanLabel(w.bspan||"year")+ICON("expand_more")+'</button></div></div></div>';}
+    return '<div class="kpi-row"><div class="kpi-num">'+chip+'<div class="metric-value bgtF-hl'+hv.cls+'">'+hv.html+'</div><div class="gl-sub">'+bgtFFavPill(v,neutral)+'<button class="trend-range" data-action="bgtF-span" data-id="'+w.id+'" aria-haspopup="listbox" aria-label="Comparison window, tap to change">vs budget · '+bgtFSpanLabel(w.bspan||"year")+ICON("expand_more")+'</button></div></div></div>';}
   /* One Explore panel: its own interval + shape, so the two panels show different cuts of the SAME window (window + scope stay global up in the header). State per side as iA/fA, iB/fB. */
   function bgtFPanel(w,side){
     var interval=w[side==="a"?"iA":"iB"]||bgtFIvDefault(w.bspan||"year");
@@ -6503,8 +6503,7 @@ function mysPopContent(){
     if(sel){var end=bankEnding(sel),beg=sel.a[0],chg=end-beg,neg=end<0,up=chg>=0;
       return '<div class="kpi-row"><div class="kpi-num">'+
         '<div class="bank-gl-top">'+bankAcctChip(w)+(neg?'<span class="bank-pill warn">'+ICON("error")+'Overdrawn</span>':'')+'</div>'+
-        '<div class="metric-value'+(neg?" bank-neg":"")+'">'+bankMoney(end)+'</div>'+
-        '<div class="gl-sub"><span class="delta-pill'+(up?"":" neg")+'" data-tip="Beginning balance '+bankMoney(beg)+' · '+(up?"up ":"down ")+bankMoney(Math.abs(chg))+' since the last reconciliation" data-tip-plain>'+ICON(up?"north_east":"south_east")+bankAbbr(chg)+'</span><span class="trend-range static">vs beginning balance</span></div>'+
+        '<div class="metric-value'+(neg?" bank-neg":"")+'" data-tip="Beginning balance '+bankMoney(beg)+' · '+(up?"up ":"down ")+bankMoney(Math.abs(chg))+' since the last reconciliation" data-tip-plain tabindex="0">'+bankMoney(end)+'</div>'+
         '</div></div>';}
     var val=bankTotal(w),negT=val<0,over=bankNegCount(w);
     var odDrill=over?'<button class="bank-odchip" data-action="bank-drill" data-over="1" data-id="'+w.id+'" aria-label="'+over+' account'+(over>1?"s":"")+' overdrawn, tap to open details">'+ICON("error")+'<span>'+over+' overdrawn</span></button>':'';
