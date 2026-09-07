@@ -6377,6 +6377,8 @@ function mysPopContent(){
   function bankEnding(a){return a.a[0]+a.a[1]+a.a[2]+a.a[3]+a.a[4]+a.a[5];}
   function bankSelected(w){if(!w.bkacct)return null;var list=bankAccounts(w);for(var i=0;i<list.length;i++)if(list[i].id===w.bkacct)return list[i];return null;}
   function bankMoney(n){return n<0?("−$"+Math.abs(n).toLocaleString()):("$"+n.toLocaleString());}
+  /* Compact money for the glance delta pill: $88k, $1.2M. Sign is carried by the arrow, so callers pass the signed value and we abs it. */
+  function bankAbbr(n){n=Math.abs(n);if(n>=1e6)return "$"+(n/1e6).toFixed(n>=1e7?0:1).replace(/\.0$/,"")+"M";if(n>=1e3)return "$"+Math.round(n/1e3)+"k";return "$"+n.toLocaleString();}
   function bankTotal(w){return bankAccounts(w).reduce(function(s,a){return s+bankEnding(a);},0);}
   function bankNegCount(w){return bankAccounts(w).filter(function(a){return bankEnding(a)<0;}).length;}
   function bankAcctChip(w){var sel=bankSelected(w);var spin=w.bkloading?'<span class="bgt-spin" aria-hidden="true"></span>':"";var lbl=sel?(sel.name+" "+sel.acct):"All Bank Accounts";return '<button class="filter-chip bank-acct-chip" data-action="bank-acct" data-id="'+w.id+'" aria-haspopup="listbox" aria-label="Bank account, tap to change the view"><span class="fc-label">'+spin+lbl+'</span>'+ICON("expand_more")+'</button>';}
