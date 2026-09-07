@@ -6503,7 +6503,8 @@ function mysPopContent(){
     if(sel){var end=bankEnding(sel),beg=sel.a[0],chg=end-beg,neg=end<0,up=chg>=0;
       return '<div class="kpi-row"><div class="kpi-num">'+
         '<div class="bank-gl-top">'+bankAcctChip(w)+(neg?'<span class="bank-pill warn">'+ICON("error")+'Overdrawn</span>':'')+'</div>'+
-        '<div class="metric-value'+(neg?" bank-neg":"")+'" data-tip="Beginning balance '+bankMoney(beg)+' · '+(up?"up ":"down ")+bankMoney(Math.abs(chg))+' since the last reconciliation" data-tip-plain tabindex="0">'+bankMoney(end)+'</div>'+
+        '<div class="metric-value'+(neg?" bank-neg":"")+'">'+bankMoney(end)+'</div>'+
+        '<div class="gl-sub"><span class="delta-pill'+(up?"":" neg")+'" data-tip="Beginning balance '+bankMoney(beg)+' · '+(up?"up ":"down ")+bankMoney(Math.abs(chg))+' since the last reconciliation" data-tip-plain tabindex="0">'+ICON(up?"north_east":"south_east")+bankAbbr(chg)+'</span><span class="trend-range static">vs beginning balance</span></div>'+
         '</div></div>';}
     var val=bankTotal(w),negT=val<0,over=bankNegCount(w);
     var odDrill=over?'<button class="bank-odchip" data-action="bank-drill" data-over="1" data-id="'+w.id+'" aria-label="'+over+' account'+(over>1?"s":"")+' overdrawn, tap to open details">'+ICON("error")+'<span>'+over+' overdrawn</span></button>':'';
