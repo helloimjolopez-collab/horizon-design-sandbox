@@ -7261,6 +7261,20 @@ var ARF_INV_SINGLE=[
   {inv:"INV-2778",customer:"Shepherd School",billTo:"Shepherd School Office",due:"2026-04-02",days:112,amount:5100,rc:"School",source:"",lines:[{desc:"Tuition balance",qty:1,unit:5100}],attachments:[{name:"stmt.pdf",size:"110 KB"}],note:"Payment plan under discussion.",payments:[{date:"2026-04-20",method:"ACH",amount:0}]},
   {inv:"INV-2779",customer:"Covenant Insurance",billTo:"Covenant HR",due:"2026-04-19",days:95,amount:2400,rc:"Insurance Billing",source:"Insurance Billing",lines:[{desc:"Group premium",qty:1,unit:2400}],attachments:[],note:"",payments:[]}
 ];
+/* Illustrative scale: extend the default dataset to ~35 customers so the drill
+   worklist exercises search, sort and paging. Demo values, not real records. */
+(function(){
+  var names=["Trinity Methodist","Grace Baptist Academy","St. Andrew Parish","Living Water Fellowship","Bethel Christian School","Calvary Chapel","New Hope Church","Mount Olive Church","Faithbridge Insurance","Riverside Pension Trust","Good Shepherd School","Emmaus Community","Cornerstone Church","Highlands Parish","Redemption Fellowship","Vineyard Church","Sonrise Academy","Christ the King Parish","Abundant Life Church","Shepherd's Gate School","Covenant Presbyterian","Grace Point Church","Wellspring Insurance","Anchor Pension Office","Maranatha Church","Beacon Hill Academy","Crossroads Fellowship","St. Luke Parish","Harvest Church","Gateway Christian School"];
+  var rcs=[["Church",""],["School",""],["Insurance Billing","Insurance Billing"],["Pension Billing","Pension Billing"]];
+  var spread=[7,12,26,33,48,69,82,95,100,112,128,140,155,168,190],base=new Date(2026,6,23);
+  names.forEach(function(nm,i){
+    var daysPast=spread[i%spread.length]+(i%5)*3;
+    var due=new Date(base.getTime()-daysPast*86400000);
+    var iso=due.getFullYear()+"-"+String(due.getMonth()+1).padStart(2,"0")+"-"+String(due.getDate()).padStart(2,"0");
+    var amt=[420,860,1250,1990,2400,3120,4200,5400,6300,9650][i%10]+(i*137%900),rc=rcs[i%rcs.length];
+    ARF_INV.push({inv:"INV-"+(2600+i),customer:nm,billTo:nm,due:iso,days:daysPast,amount:amt,rc:rc[0],source:rc[1],lines:[{desc:"Outstanding balance",qty:1,unit:amt}],attachments:(i%3===0?[{name:"INV-"+(2600+i)+".pdf",size:"72 KB"}]:[]),note:"",payments:[]});
+  });
+})();
 
 /* (2) RENDER ----------------------------------------------------------- */
 function arFEsc(s){return String(s).replace(/"/g,"&quot;");}
