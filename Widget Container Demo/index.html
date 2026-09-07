@@ -7385,10 +7385,11 @@ function arFContent(w){
   if(w.size==="kpi")return arFGlance(w);
   if(w.arFloading)return arFHeaderBlock(w,"loading")+arFSkeleton();
   var mh=arFHeaderBlock(w);
-  if(w.size==="xwide")return mh+'<div class="arF-explore">'+
-    '<section class="arF-panel"><h4 class="arF-panel-h">'+ICON("stacked_bar_chart")+'By aging</h4>'+arFBar(w,"aging")+'</section>'+
-    '<section class="arF-panel"><h4 class="arF-panel-h">'+ICON("groups")+'Top overdue customers</h4>'+arFBar(w,"customer")+'</section>'+
-  '</div>';
+  if(w.size==="xwide"){var grp=w.arFGroup||"aging",gh=(grp==="customer")?[ICON("groups"),"Top overdue customers"]:[ICON("stacked_bar_chart"),"By aging"];
+    return mh+'<div class="arF-explore">'+
+      '<section class="arF-panel"><h4 class="arF-panel-h">'+gh[0]+gh[1]+'</h4>'+arFBar(w)+'</section>'+
+      '<section class="arF-panel"><h4 class="arF-panel-h">'+ICON("receipt_long")+'Invoice detail</h4>'+arFInlineList(w)+'</section>'+
+    '</div>';}
   return mh+'<div class="arF-body">'+arFBar(w)+'</div>';
 }
 
