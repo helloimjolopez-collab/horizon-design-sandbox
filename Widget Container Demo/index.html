@@ -7341,13 +7341,9 @@ function arFHeaderBlock(w,mode){
   var numInner;
   if(loading){numInner='<div class="dep-hd-kpigrp"><span class="sk" style="width:120px;height:22px;border-radius:6px"></span><span class="sk" style="width:120px;height:20px;border-radius:999px"></span></div>';}
   else{numInner='<div class="dep-hd-kpigrp"><span class="metric-value">'+money(arFTotal(w))+'</span>'+arFOverduePill(w)+'</div>';}
-  var n=arFCount(w);
-  var ctx='Owed to you, oldest balances first.';
-  /* Explore shows both cuts side by side, so the group toggle is hidden there. */
-  var toggle=(w.size==="xwide")?"":arFGroupToggle(w);
   return '<div class="dep-hd">'+
-    '<div class="dep-hd-top"><div class="arF-ctlrow">'+arFRcChip(w)+arFSourceChip(w)+'</div><div class="dep-hd-toggle">'+toggle+'</div></div>'+
-    '<div class="dep-hd-num"><div class="arF-numwrap">'+numInner+'<div class="arF-ctx">'+ctx+'</div></div></div>'+
+    '<div class="dep-hd-top"><div class="arF-ctlrow">'+arFRcChip(w)+arFSourceChip(w)+'</div><div class="dep-hd-toggle">'+arFGroupToggle(w)+'</div></div>'+
+    '<div class="dep-hd-num"><div class="arF-numwrap">'+numInner+'</div></div>'+
   '</div>';
 }
 
