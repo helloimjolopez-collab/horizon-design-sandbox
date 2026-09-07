@@ -6999,7 +6999,7 @@ function arGlance(w){
   var read="";
   if(tot>0){
     var call=(over>0&&worst&&worst.key!=="cur")
-      ?'<span class="ar-glance-cap"><span class="ar-sevdot" style="background:var('+worst.color+')"></span>'+money(worst.total)+' in '+worst.label+', the oldest with a balance</span>'
+      ?'<span class="ar-glance-cap"><span class="ar-sevdot" style="background:var('+worst.color+')"></span>'+money(worst.total)+' in '+worst.label+'</span>'
       :'<span class="ar-glance-cap ar-cap-ok">'+ICON("check")+'Every invoice is still current</span>';
     read='<div class="ar-glance-read">'+arStackBar(w)+call+'</div>';
   }
@@ -7319,7 +7319,7 @@ function arFGlance(w){
   var read="";
   if(tot>0){
     var call=(over>0&&worst&&worst.key!=="cur")
-      ?'<span class="arF-glance-cap"><span class="arF-sevdot" style="background:var('+worst.color+')"></span>'+money(worst.total)+' in '+worst.label+', the oldest with a balance</span>'
+      ?'<span class="arF-glance-cap"><span class="arF-sevdot" style="background:var('+worst.color+')"></span>'+money(worst.total)+' in '+worst.label+'</span>'
       :'<span class="arF-glance-cap arF-cap-ok">'+ICON("check")+'Every invoice is still current</span>';
     read='<div class="arF-glance-read">'+arFStackBar(w)+call+'</div>';
   }
@@ -8086,7 +8086,7 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
     var tot=insTotal(w),n=insPlanCount(w),lead=(w.insType&&w.insType!=="All")?insTypeLabel(w).toLowerCase():"all types";
     return '<div class="kpi-row"><div class="kpi-num">'+
       '<div class="dep-hd-kpigrp"><span class="metric-value">'+insNum(tot)+'</span><span class="bank-pill">'+ICON("groups")+n+' plan'+(n===1?"":"s")+'</span></div>'+
-      '<div class="gl-sub"><span class="ins-caption">enrolled across '+lead+', employees and dependents</span></div>'+
+      ''+
     '</div></div>';
   }
 
@@ -8270,7 +8270,7 @@ function apFmtShort(iso){var d=apParse(iso),s=d.getDate()+" "+AP_M[d.getMonth()]
     var tot=insFTotal(w),n=insFPlanCount(w),lead=(w.insType&&w.insType!=="All")?insFTypeLabel(w).toLowerCase():"all types";
     return '<div class="kpi-row"><div class="kpi-num">'+
       '<div class="dep-hd-kpigrp"><span class="metric-value">'+insFNum(tot)+'</span><span class="bank-pill">'+ICON("groups")+n+' plan'+(n===1?"":"s")+'</span></div>'+
-      '<div class="gl-sub"><span class="ins-caption">enrolled across '+lead+', employees and dependents</span></div>'+
+      ''+
     '</div></div>';
   }
   function insFEmpty(w){
