@@ -7536,39 +7536,7 @@ function arFDetailModalInner(){
   return inner;
 }
 function arFDetailModalHTML(){
-  var w=find(modal.id);if(!w)return "";
-  var mode=modal.mode,key=modal.key;
-  var invs=arFDetailInvoices(w,mode,key);
-  var subj=(mode==="customer")?key:(mode==="all")?"All outstanding invoices":arFBucketLabel(key);
-  var cols=["Customer","Bill To","Due Date","Invoice #","Days Past Due","Outstanding"];
-  var head='<div class="wt-row wt-head arF-dhead"><span class="arF-dcheck arF-dcheck-head"></span><span class="arF-dexp"></span>'+cols.map(function(c,i){return '<span class="arF-dc arF-dc'+i+'">'+c+'</span>';}).join("")+'</div>';
-  var body;
-  if(invs.length){
-    body=invs.map(function(x){
-      var open=(modal.exp===x.inv),dpd=x.days>0?(x.days+" days"):"Not due",selc=modal.sel&&modal.sel[x.inv];
-      var row='<div class="wt-row arF-drow'+(open?" open":"")+'" data-action="arF-exp" data-id="'+w.id+'" data-inv="'+arFEsc(x.inv)+'" role="button" tabindex="0" aria-expanded="'+open+'">'+
-        '<span class="arF-dcheck" role="checkbox" aria-checked="'+(!!selc)+'" tabindex="0" data-action="arF-check" data-inv="'+arFEsc(x.inv)+'" aria-label="Select invoice '+x.inv+' for processing">'+ICON(selc?"check_box":"check_box_outline_blank")+'</span>'+
-        '<span class="arF-dexp">'+ICON(open?"expand_more":"chevron_right")+'</span>'+
-        '<span class="arF-dc arF-dc0">'+x.customer+'</span>'+
-        '<span class="arF-dc arF-dc1">'+x.billTo+'</span>'+
-        '<span class="arF-dc arF-dc2">'+arFFmtDate(x.due)+'</span>'+
-        '<span class="arF-dc arF-dc3">'+x.inv+'</span>'+
-        '<span class="arF-dc arF-dc4">'+dpd+'</span>'+
-        '<span class="arF-dc arF-dc5 arF-dc-amt">'+money(x.amount)+'</span></div>';
-      if(open)row+='<div class="arF-drawer">'+arFDetailTabs(x)+arFDrawerActions(w,x)+'</div>';
-      return row;
-    }).join("");
-  } else {
-    body='<div class="state" data-kind="empty">'+ICON("inbox")+'<div class="state-title">No invoices to display</div><div class="state-sub">Nothing matches this selection.</div></div>';
-  }
-  var totalOut=invs.reduce(function(s,x){return s+x.amount;},0);
-  var foot=invs.length?'<div class="dep-total arF-dtotal"><span>'+invs.length+' invoice'+(invs.length>1?"s":"")+'</span><span>'+money(totalOut)+'</span></div>':'';
-  var selN=modal.sel?Object.keys(modal.sel).filter(function(k){return modal.sel[k];}).length:0;
-  var cnote=modal.confirmed?'<div class="arF-confirm-note"><span class="arF-cn-lbl">Move to unposted transactions</span><span class="arF-cn-count">('+selN+' invoice'+(selN===1?"":"s")+' selected)</span></div>':(selN>0?'<div class="arF-confirm-note arF-cn-live"><span class="arF-cn-count">('+selN+' invoice'+(selN===1?"":"s")+' selected)</span></div>':'');
-  return '<div class="modal-backdrop" data-action="arF-detail-close"><div class="modal modal-wide arF-detail-modal" data-action="stop" role="dialog" aria-modal="true" aria-label="Receivable invoices outstanding, detail">'+
-    '<div class="modal-h arF-detail-h"><span class="modal-title"><span class="material-symbols-rounded" style="font-size:19px;vertical-align:-4px;margin-right:7px;color:var(--txt-subtle)">receipt_long</span>Receivable Invoices Outstanding: Detail</span><span class="arF-dsub">'+subj+'</span><span class="arF-dh-spacer"></span><button class="btn naked sm" data-action="arF-export" data-id="'+w.id+'">'+ICON("download")+'Export to Excel</button><button class="iconbtn" data-action="arF-detail-close" aria-label="Close">'+ICON("close")+'</button></div>'+
-    '<div class="modal-b arF-detail-b"><div class="arF-detail-scroll">'+head+body+'</div>'+foot+'</div>'+
-    '<div class="modal-f">'+cnote+'<span class="arF-f-spacer"></span><button class="btn outlined sm" data-action="arF-confirm" data-id="'+w.id+'">Confirm</button><button class="btn primary sm" data-action="arF-detail-close">Close</button></div></div></div>';
+  return '<div class="modal-backdrop" data-action="arF-detail-close"><div class="modal modal-wide arF-detail-modal arF-wl-modal" data-action="stop" role="dialog" aria-modal="true" aria-label="Receivable invoices outstanding, detail">'+arFDetailModalInner()+'</div></div>';
 }
 
 /* (3) HANDLERS --------------------------------------------------------- */
