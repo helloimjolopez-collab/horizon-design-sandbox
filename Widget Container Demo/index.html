@@ -7596,6 +7596,8 @@ function arFShowPop(row,mx,my){
 }
 /* Attach once at load (this listener lives inside the ar IIFE block): */
 document.addEventListener("mousemove",function(e){var row=e.target.closest&&e.target.closest(".arF-barrow[data-arFpop]");if(!row){if(arFPopEl)arFHidePop();return;}arFShowPop(row,e.clientX,e.clientY);});
+/* Worklist search: update in place, keep focus (no full app render). */
+document.addEventListener("input",function(e){if(!e.target||e.target.id!=="arFwlq"||!modal||modal.type!=="arFdetail")return;modal.q=e.target.value;modal.page=1;renderModal();var el=document.getElementById("arFwlq");if(el){el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_e){}}});
 
   /* ===== Payroll Scheduled Time Off (pto) ===== */
   var PTO_ME="J. Lopez", PTO_TODAY="23 Jul 2026";
