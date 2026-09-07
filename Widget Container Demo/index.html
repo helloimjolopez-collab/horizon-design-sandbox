@@ -6731,9 +6731,7 @@ function purGlance(w){var filtered=purFiltered(w),count=filtered.length,out=purS
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="pur-gl-top">'+purStatusChip(w)+'</div>'+
     '<div class="metric-value">'+count+'</div>'+
-    '<div class="gl-sub"><span class="bank-caption">'+purCountLabel(w)+' · '+money(out)+' outstanding</span></div>'+
-    '<div class="gl-sub"><span class="bank-caption">'+money(enc)+' committed, not yet paid</span></div>'+
-    (count?'<div class="gl-sub"><button class="pur-gl-review" data-action="pur-drill" data-id="'+w.id+'" aria-label="Review the approval queue and act">'+ICON("open_in_full")+'<span>Review queue</span></button></div>':'')+
+    '<div class="gl-sub"><span class="bank-caption">'+money(out)+' outstanding</span></div>'+
     '</div></div>';}
 function purEmptyState(w){var ec=EMPTY_COPY.purchasing;return '<div class="state" data-kind="empty">'+ICON("inbox")+'<div class="state-title">'+ec.title+'</div><div class="state-sub">'+ec.sub+'</div></div>';}
 function purLoad(w){w.purloading=true;clearTimeout(timers["pur-"+w.id]);timers["pur-"+w.id]=setTimeout(function(){w.purloading=false;render();},850);}
