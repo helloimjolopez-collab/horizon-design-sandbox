@@ -7284,7 +7284,7 @@ function arFCustomers(w){
 }
 function arFDetailInvoices(w,mode,key){
   var inv=arFFiltered(w);
-  var out=(mode==="customer")?inv.filter(function(x){return x.customer===key;}):inv.filter(function(x){return arFBucketOf(x.days)===key;});
+  var out=(mode==="customer")?inv.filter(function(x){return x.customer===key;}):(mode==="all")?inv.slice():inv.filter(function(x){return arFBucketOf(x.days)===key;});
   return out.sort(function(a,b){return b.days-a.days;});
 }
 /* Filter chips: secondary-fill + leading filter glyph (via .filter-chip[data-action]) + trailing chevron. Sized to content. */
@@ -7380,6 +7380,20 @@ function arFBar(w,forceGroup){
 
 function arFSkeleton(){var bars="";[90,64,48,34,22].forEach(function(wd){bars+='<div class="arF-sk-row"><span class="sk" style="width:70px;height:12px;border-radius:4px"></span><span class="sk arF-sk-bar" style="width:'+wd+'%"></span></div>';});return '<div class="arF-skel"><div class="arF-skel-bars">'+bars+'</div><div class="bgt-skel-cap"><span class="bgt-spin"></span>Loading…</div></div>';}
 
+/* xwide companion to the breakdown bar: the invoices behind the current
+   selection, worst overdue first, read-only. Capped; the footer opens the full
+   detail overlay. Values as text, so it reconciles to the bar total. */
+function arFInlineList(w){
+  var inv=arFFiltered(w).slice().sort(function(a,b){return b.days-a.days;});
+  if(!inv.length)return '<div class="arF-zeroline">'+ICON("info")+'Nothing to show for this selection.</div>';
+  var tot=inv.reduce(function(s,x){return s+x.amount;},0),cap=8,shown=inv.slice(0,cap);
+  var rows=shown.map(function(x){var dpd=x.days>0?(x.days+"d past due"):"Not due";
+    return '<div class="wt-row arF-ilrow"><span class="lr-main arF-il-cust">'+x.customer+'</span><span class="arF-il-days">'+dpd+'</span><span class="wt-c2 arF-il-amt">'+money(x.amount)+'</span></div>';}).join("");
+  var more=inv.length>cap?'<button class="depf-more" data-action="arF-open" data-id="'+w.id+'" data-mode="all" data-key="all">'+ICON("expand_more")+'<span class="depf-more-n">View all '+inv.length+' invoices</span></button>':'';
+  var foot='<div class="dep-total arF-iltotal"><span>'+inv.length+' invoice'+(inv.length>1?"s":"")+'</span><span>'+money(tot)+'</span></div>';
+  return '<div class="arF-illist">'+rows+'</div>'+more+foot;
+}
+
 function arFContent(w){
   if(w.state==="empty")return arFEmpty(w);
   if(w.size==="kpi")return arFGlance(w);
@@ -7429,7 +7443,7 @@ function arFDetailModalHTML(){
   var w=find(modal.id);if(!w)return "";
   var mode=modal.mode,key=modal.key;
   var invs=arFDetailInvoices(w,mode,key);
-  var subj=(mode==="customer")?key:arFBucketLabel(key);
+  var subj=(mode==="customer")?key:(mode==="all")?"All outstanding invoices":arFBucketLabel(key);
   var cols=["Customer","Bill To","Due Date","Invoice #","Days Past Due","Outstanding"];
   var head='<div class="wt-row wt-head arF-dhead"><span class="arF-dcheck arF-dcheck-head"></span><span class="arF-dexp"></span>'+cols.map(function(c,i){return '<span class="arF-dc arF-dc'+i+'">'+c+'</span>';}).join("")+'</div>';
   var body;
