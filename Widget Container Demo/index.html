@@ -7441,9 +7441,99 @@ function arFDetailTabs(x){
   }
   return '<div class="arF-tabbar" role="tablist">'+bar+'</div><div class="arF-tabpanel" role="tabpanel">'+panel+'</div>';
 }
-function arFDrawerActions(w,x){
-  return '<div class="arF-actions"><button class="btn outlined sm" data-action="arF-open-invoice" data-id="'+w.id+'" data-inv="'+arFEsc(x.inv)+'">'+ICON("open_in_new")+'Open invoice</button>'+
-    '<button class="btn naked sm" data-action="arF-followup" data-id="'+w.id+'" data-inv="'+arFEsc(x.inv)+'">'+ICON("event_note")+'Record a follow-up</button></div>';
+/* Group the scope's invoices by customer, worst-overdue first: the collections
+   worklist model (who to chase). */
+function arFCustGroups(invs){
+  var m={},order=[];
+  invs.forEach(function(x){if(!m[x.customer]){m[x.customer]={customer:x.customer,total:0,count:0,oldest:0,worst:0,invs:[]};order.push(x.customer);}var g=m[x.customer];g.total+=x.amount;g.count++;g.invs.push(x);if(x.days>g.oldest)g.oldest=x.days;var sv=arFSevOf(x.days);if(sv>g.worst)g.worst=sv;});
+  return order.map(function(c){var g=m[c];g.invs.sort(function(a,b){return b.days-a.days;});return g;});
+}
+/* Illustrative contact + last-contacted per customer, deterministic from the name
+   (demo data, not real records) so the chase journey reads end to end. */
+function arFContact(name){
+  var hsh=0,i;for(i=0;i<name.length;i++)hsh=(hsh*31+name.charCodeAt(i))>>>0;
+  var slug=name.toLowerCase().replace(/[^a-z]+/g,"").slice(0,14);
+  var chans=["Emailed a reminder","Left a voicemail","Mailed a statement","Spoke with the office"];
+  var daysAgo=hsh%46,d=new Date(2026,6,23);d.setDate(d.getDate()-daysAgo);
+  var last=(daysAgo<38)?{via:chans[hsh%chans.length],iso:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"),days:daysAgo}:null;
+  return {email:"accounts@"+slug+".org",phone:"(555) "+String(200+hsh%799)+"-"+String(1000+hsh%8999),last:last};
+}
+/* Expanded customer panel: their invoices, contact + last activity, and the
+   collection next steps (open invoice, statement, follow-up, payment). */
+function arFCustPanel(w,g,c){
+  var invRows=g.invs.map(function(x){var od=x.days>0;
+    return '<div class="arF-ci"><span class="arF-ci-inv">'+x.inv+((x.attachments&&x.attachments.length)?'<span class="arF-ci-doc" data-tip="'+arFEsc(x.attachments[0].name)+'" data-tip-plain>'+ICON("attach_file")+'</span>':'')+'</span>'+
+      '<span class="arF-ci-due">due '+arFFmtDate(x.due)+'</span>'+
+      '<span class="arF-ci-days'+(od?" over":"")+'">'+(od?(x.days+"d overdue"):"Not due")+'</span>'+
+      '<span class="arF-ci-amt">'+money(x.amount)+'</span>'+
+      '<button class="arF-ci-open" data-action="arF-open-invoice" data-inv="'+arFEsc(x.inv)+'" aria-label="Open invoice '+arFEsc(x.inv)+' in Accounts Receivable">'+ICON("open_in_new")+'</button></div>';
+  }).join("");
+  var activity=c.last?('<span class="arF-cp-actline">'+ICON("history")+c.last.via+' on '+arFFmtDate(c.last.iso)+'</span>'):('<span class="arF-cp-actline arF-cp-none">'+ICON("error_outline")+'No contact logged yet</span>');
+  return '<div class="arF-cp">'+
+    '<div class="arF-cp-contact"><span class="arF-cp-ci">'+ICON("mail")+c.email+'</span><span class="arF-cp-ci">'+ICON("call")+c.phone+'</span>'+activity+'</div>'+
+    '<div class="arF-cp-invs">'+invRows+'</div>'+
+    '<div class="arF-cp-actions">'+
+      '<button class="btn outlined sm" data-action="arF-statement" data-cust="'+arFEsc(g.customer)+'">'+ICON("mail")+'Send statement</button>'+
+      '<button class="btn naked sm" data-action="arF-followup" data-cust="'+arFEsc(g.customer)+'">'+ICON("event_note")+'Record a follow-up</button>'+
+      '<button class="btn naked sm" data-action="arF-record-pay" data-cust="'+arFEsc(g.customer)+'">'+ICON("payments")+'Record a payment</button>'+
+    '</div></div>';
+}
+/* Export preview: shows the exact scope (selected vs all), the columns and the
+   first rows, so Maria sees what she is exporting before she commits. */
+function arFExportPreview(w,groups,selN){
+  var sel=modal.sel||{};
+  var scope=selN>0?groups.filter(function(g){return sel[g.customer];}):groups;
+  var custN=scope.length,invN=scope.reduce(function(s,g){return s+g.count;},0),tot=scope.reduce(function(s,g){return s+g.total;},0);
+  var cols=["Customer","Invoice #","Due date","Days past due","Outstanding","Last contacted"];
+  return '<div class="arF-xp-back" data-action="arF-export-cancel"><div class="arF-xp" data-action="stop" role="dialog" aria-modal="true" aria-label="Export to Excel">'+
+    '<div class="arF-xp-h"><span class="arF-xp-ht">'+ICON("download")+'Export to Excel</span><button class="iconbtn" data-action="arF-export-cancel" aria-label="Cancel">'+ICON("close")+'</button></div>'+
+    '<div class="arF-xp-b">'+
+      '<div class="arF-xp-scope">'+custN+' customer'+(custN===1?"":"s")+' · '+invN+' invoice'+(invN===1?"":"s")+' · '+money(tot)+'</div>'+
+      '<div class="arF-xp-cap">Columns</div><div class="arF-xp-cols">'+cols.map(function(cn){return '<span class="arF-xp-col">'+cn+'</span>';}).join("")+'</div>'+
+      '<div class="arF-xp-list">'+scope.slice(0,6).map(function(g){return '<div class="arF-xp-row"><span class="arF-xp-rc">'+g.customer+'</span><span>'+g.count+' inv</span><span class="arF-xp-ra">'+money(g.total)+'</span></div>';}).join("")+(scope.length>6?'<div class="arF-xp-more">plus '+(scope.length-6)+' more</div>':'')+'</div>'+
+    '</div>'+
+    '<div class="arF-xp-f"><button class="btn naked sm" data-action="arF-export-cancel">Cancel</button><button class="btn primary sm" data-action="arF-export-do">'+ICON("download")+'Export '+custN+' customer'+(custN===1?"":"s")+'</button></div>'+
+  '</div></div>';
+}
+/* Worklist body, re-rendered in place on every in-modal tap (no full app render,
+   scroll preserved) so it never blinks. */
+function arFDetailModalInner(){
+  var w=find(modal.id);if(!w)return "";
+  var invs=arFDetailInvoices(w,modal.mode,modal.key),groups=arFCustGroups(invs);
+  var q=(modal.q||"").trim().toLowerCase();
+  if(q)groups=groups.filter(function(g){return g.customer.toLowerCase().indexOf(q)>-1;});
+  var sort=modal.sort||"oldest";
+  groups.sort(function(a,b){if(sort==="name")return a.customer.localeCompare(b.customer);if(sort==="owed")return b.total-a.total;return (b.oldest-a.oldest)||(b.total-a.total);});
+  var grand=invs.reduce(function(s,x){return s+x.amount;},0),custN=arFCustGroups(invs).length;
+  var subj=(modal.mode==="customer")?modal.key:(modal.mode==="all")?"All outstanding":arFBucketLabel(modal.key);
+  var head='<div class="modal-h arF-wl-h"><div class="arF-wl-htext"><span class="modal-title"><span class="material-symbols-rounded arF-wl-tic">receipt_long</span>Receivable Invoices Outstanding</span>'+
+    '<span class="arF-wl-sub">'+subj+' · '+custN+' customer'+(custN===1?"":"s")+' · '+money(grand)+'</span></div>'+
+    '<button class="iconbtn" data-action="arF-detail-close" aria-label="Close">'+ICON("close")+'</button></div>';
+  var sortLbl={oldest:"Oldest first",owed:"Most owed",name:"Name"}[sort];
+  var controls='<div class="arF-wl-controls"><div class="arF-wl-search"><span class="material-symbols-rounded">search</span><input id="arFwlq" class="arF-wl-q" placeholder="Search customers" aria-label="Search customers" value="'+arFEsc(modal.q||"")+'"></div>'+
+    '<button class="arF-wl-sort" data-action="arF-sort">'+ICON("swap_vert")+sortLbl+'</button></div>';
+  var page=modal.page||1,PAGE=12,shown=groups.slice(0,page*PAGE);
+  var rows=shown.map(function(g){
+    var open=modal.exp===g.customer,sel=!!(modal.sel&&modal.sel[g.customer]),c=arFContact(g.customer);
+    var age='<span class="arF-wl-age s'+g.worst+'">'+(g.oldest>0?(g.oldest+"d overdue"):"Current")+'</span>';
+    var last=c.last?'<span class="arF-wl-last" data-tip="'+arFEsc(c.last.via+" on "+arFFmtDate(c.last.iso))+'" data-tip-plain>'+ICON("history")+c.last.days+'d ago</span>':'<span class="arF-wl-last none">'+ICON("error_outline")+'Not contacted</span>';
+    var row='<div class="arF-wl-row'+(open?" open":"")+'"><span class="arF-wl-check" role="checkbox" aria-checked="'+sel+'" tabindex="0" data-action="arF-check" data-cust="'+arFEsc(g.customer)+'" aria-label="Select '+arFEsc(g.customer)+'">'+ICON(sel?"check_box":"check_box_outline_blank")+'</span>'+
+      '<button class="arF-wl-main" data-action="arF-cust-exp" data-cust="'+arFEsc(g.customer)+'" aria-expanded="'+open+'"><span class="arF-wl-exp">'+ICON(open?"expand_more":"chevron_right")+'</span><span class="arF-wl-nm">'+g.customer+'</span><span class="arF-wl-meta">'+age+'<span class="arF-wl-cnt">'+g.count+' inv</span>'+last+'</span><span class="arF-wl-amt">'+money(g.total)+'</span></button>';
+    if(open)row+=arFCustPanel(w,g,c);
+    return row+'</div>';
+  }).join("");
+  var more=groups.length>shown.length?'<button class="depf-more" data-action="arF-wl-more"><span class="depf-more-n">Show more ('+(groups.length-shown.length)+' of '+groups.length+' left)</span></button>':'';
+  var listBody=shown.length?('<div class="arF-wl-headrow"><span class="arF-wl-check"></span><span class="arF-wl-hnm">Customer</span><span class="arF-wl-hmeta">Oldest, invoices, last contact</span><span class="arF-wl-hamt">Outstanding</span></div>'+rows+more):('<div class="state" data-kind="empty">'+ICON("search_off")+'<div class="state-title">No customers match</div></div>');
+  var list='<div class="arF-wl-list" id="arFwlScroll">'+listBody+'</div>';
+  var selN=modal.sel?Object.keys(modal.sel).filter(function(k){return modal.sel[k];}).length:0;
+  var selAll=modal.sel&&groups.length&&groups.every(function(g){return modal.sel[g.customer];});
+  var scopeTxt=selN>0?(selN+" selected"):("all "+custN);
+  var foot='<div class="modal-f arF-wl-f"><label class="arF-wl-selall"><span role="checkbox" aria-checked="'+(!!selAll)+'" tabindex="0" data-action="arF-selall">'+ICON(selAll?"check_box":"check_box_outline_blank")+'</span>Select all</label><span class="arF-wl-fspace"></span>'+
+    '<button class="btn naked sm" data-action="arF-export">'+ICON("download")+'Export '+scopeTxt+'</button>'+
+    '<button class="btn outlined sm" data-action="arF-statements">'+ICON("mail")+'Print statements ('+(selN||custN)+')</button></div>';
+  var inner=head+'<div class="modal-b arF-wl-b">'+controls+list+'</div>'+foot;
+  if(modal.export)inner+=arFExportPreview(w,groups,selN);
+  return inner;
 }
 function arFDetailModalHTML(){
   var w=find(modal.id);if(!w)return "";
