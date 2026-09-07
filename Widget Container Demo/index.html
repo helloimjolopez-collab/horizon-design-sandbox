@@ -8748,7 +8748,7 @@ function apBadge(w){var od=apOverdueTotal(w);if(od>0){var n=apOverdueCount(w);re
     if(modal.type==="pto-confirm"){mr.innerHTML=ptoConfirmModalHTML();modalMounted=true;return;}
     if(modal.type==="mysdetail"){mr.innerHTML=mysDetailModalHTML();return;}
     if(modal.type==="artdetail"){mr.innerHTML=arDetailModalHTML();return;}
-    if(modal.type==="arFdetail"){mr.innerHTML=arFDetailModalHTML();return;} // Receivable Invoices Outstanding (MB updated), additive
+    if(modal.type==="arFdetail"){var _am=mr.querySelector(".arF-detail-modal");if(modalMounted&&_am){var _sc=mr.querySelector("#arFwlScroll"),_st=_sc?_sc.scrollTop:0;_am.innerHTML=arFDetailModalInner();var _sc2=mr.querySelector("#arFwlScroll");if(_sc2)_sc2.scrollTop=_st;return;}mr.innerHTML=arFDetailModalHTML();modalMounted=true;return;} // Receivable Invoices Outstanding (MB updated): incremental in-place update, no blink
     if(modal.type==="pendetail"){mr.innerHTML=penDetailModalHTML();return;}
     if(modal.type==="penFdetail"){mr.innerHTML=penFDetailModalHTML();return;} // Pension Plans (MB updated), additive
     if(modal.type==="remFdetail"){mr.innerHTML=remFDetailModalHTML();return;} // Remittance Pledges (MB updated), additive
