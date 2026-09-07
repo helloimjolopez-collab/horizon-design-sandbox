@@ -6727,7 +6727,7 @@ function purEncView(w){var v=w.encview||"chart";
   return toggle+(v==="table"?purEncTable(w):purEnc(w));}
 function purFull(w){var left=purFiltered(w).length?purTable(w,true):purCaughtUp(w);
   return '<div class="dep-full"><div class="dep-col"><div class="dep-col-h">'+purColLabel(w)+' queue</div>'+left+'</div><div class="dep-col dep-col-dist"><div class="dep-col-h">Committed, not yet paid</div>'+purEncView(w)+'</div></div>';}
-function purGlance(w){var filtered=purFiltered(w),count=filtered.length,out=purSum(filtered),enc=purEncTotal(w);
+function purGlance(w){var filtered=purFiltered(w),count=filtered.length,out=purSum(filtered);
   return '<div class="kpi-row"><div class="kpi-num">'+
     '<div class="pur-gl-top">'+purStatusChip(w)+'</div>'+
     '<div class="metric-value">'+count+'</div>'+
