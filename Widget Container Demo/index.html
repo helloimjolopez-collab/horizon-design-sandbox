@@ -6470,6 +6470,18 @@ function mysPopContent(){
   function bankAbbr(n){n=Math.abs(n);if(n>=1e6)return "$"+(n/1e6).toFixed(n>=1e7?0:1).replace(/\.0$/,"")+"M";if(n>=1e3)return "$"+Math.round(n/1e3)+"k";return "$"+n.toLocaleString();}
   function bankTotal(w){return bankAccounts(w).reduce(function(s,a){return s+bankEnding(a);},0);}
   function bankNegCount(w){return bankAccounts(w).filter(function(a){return bankEnding(a)<0;}).length;}
+  function bankBeginTotal(w){return bankAccounts(w).reduce(function(s,a){return s+(a.a[0]||0);},0);}
+  /* Running balance across the reconciliation entries (Beginning, then Deposits,
+     Voids, Checks, Withdrawals, EFT, to Ending). Not a time axis: the sequence of
+     movements since the last reconciliation. Endpoints are Beginning and Ending,
+     and Ending equals the KPI. */
+  function bankRunning(w){var sel=bankSelected(w),cats;
+    if(sel){cats=sel.a.slice();}
+    else{cats=[0,0,0,0,0,0];bankAccounts(w).forEach(function(a){for(var i=0;i<6;i++)cats[i]+=(a.a[i]||0);});}
+    var run=[],acc=0,i;for(i=0;i<cats.length;i++){acc+=cats[i];run.push(acc);}return run;}
+  function bankSpark(w){var run=bankRunning(w),mx=Math.max.apply(null,run),mn=Math.min.apply(null,run);
+    if(run.length<2||mx===mn)return "";
+    return depSparkHTML({s:run,labs:["Beginning balance","Deposits","Voids","Checks","Withdrawals","Ending balance"]},"bank-spark","Balance since the last reconciliation, beginning to ending. Hover to read a point");}
   function bankAcctChip(w){var sel=bankSelected(w);var spin=w.bkloading?'<span class="bgt-spin" aria-hidden="true"></span>':"";var lbl=sel?(sel.name+" "+sel.acct):"All Bank Accounts";return '<button class="filter-chip bank-acct-chip" data-action="bank-acct" data-id="'+w.id+'" aria-haspopup="listbox" aria-label="Bank account, tap to change the view"><span class="fc-label">'+spin+lbl+'</span>'+ICON("expand_more")+'</button>';}
   function bankViewToggle(w){var v=w.bkview||"table";var opts=[["table","Table","table_rows"],["chart","Bars","bar_chart"]];return '<div class="vtoggle" role="group" aria-label="View">'+opts.map(function(o){return '<button class="vt'+(v===o[0]?" on":"")+'" data-action="bank-view" data-id="'+w.id+'" data-v="'+o[0]+'" aria-pressed="'+(v===o[0])+'">'+ICON(o[2])+o[1]+'</button>';}).join("")+'</div>';}
   function bankHeaderBlock(w,mode){
@@ -9122,8 +9134,7 @@ function apBadge(w){var od=apOverdueTotal(w);if(od>0){var n=apOverdueCount(w);re
     bankHideBpop();
     bankPopEl=document.createElement("div");bankPopEl.className="bgt-pop bank-pop";
     bankPopEl.innerHTML='<div class="bgt-pop-h">'+cat+'</div>'+
-      '<div class="bgt-pop-r"><span class="bgt-pop-sw" style="background:'+(out?"var(--red-100)":"var(--am-600)")+'"></span><span class="bgt-pop-lbl">'+(out?"Out of the account":"Into the account")+'</span><span class="bgt-pop-v">'+(out?"−":"+")+money(amt)+'</span></div>'+
-      '<div class="bgt-pop-note">'+(out?"Reduces the balance.":"Adds to the balance.")+'</div>';
+      '<div class="bgt-pop-r"><span class="bgt-pop-sw" style="background:'+(out?"var(--red-100)":"var(--am-600)")+'"></span><span class="bgt-pop-lbl">'+cat+'</span><span class="bgt-pop-v">'+(out?"−":"+")+money(amt)+'</span></div>';
     document.body.appendChild(bankPopEl);
     var bw=bankPopEl.offsetWidth,bh=bankPopEl.offsetHeight,M=10;
     var left=mx+14;if(left+bw>innerWidth-M)left=mx-bw-14;if(left<M)left=M;
