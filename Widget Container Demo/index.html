@@ -882,6 +882,12 @@
   .bgt-pop.bank-pop{z-index:4000;}
   /* Overdrawn quick-filter: a small toggle chip in the toolbar (not a KPI tile) */
   .bank-odchip{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--red-100);background:var(--red-10);border:1px solid rgba(176,58,58,.28);border-radius:999px;padding:4px 11px 4px 9px;cursor:pointer;white-space:nowrap;}
+  .bank-odpill{display:inline-flex;align-items:center;gap:2px;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--red-100);background:var(--red-10);border:0;border-radius:999px;padding:2px 6px 2px 8px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .bank-odpill .material-symbols-rounded{font-size:14px;}
+  .bank-odpill:hover{background:rgba(176,58,58,.16);}
+  .bank-drill-h{display:flex;align-items:center;gap:8px;}
+  .bank-dh-spacer{flex:1 1 auto;}
+  .bank-drill-h .bank-back .material-symbols-rounded{font-size:16px;}
   .bank-odchip .material-symbols-rounded{font-size:16px;font-variation-settings:'FILL' 1;}
   .bank-odchip:hover{background:#fbe3e3;}
   .bank-odchip.on{background:var(--red-100);color:#fff;border-color:var(--red-100);}
@@ -8919,6 +8925,8 @@ function apBadge(w){var od=apOverdueTotal(w);if(od>0){var n=apOverdueCount(w);re
     if(a==="bank-drill"){var wdr=find(id);if(!wdr)return;wdr.bkOver=!!t.getAttribute("data-over");modal={type:"bankdrill",id:id};modalMounted=false;pop=null;render();return;}
     if(a==="bank-acct-drill"){var wad=find(id);if(!wad)return;modal={type:"bankdrill",id:id,acct:t.getAttribute("data-acct")};modalMounted=false;pop=null;render();return;}
     if(a==="bank-drill-close"){modal=null;pop=null;render();return;}
+    if(a==="bank-drill-back"){if(modal)modal.acct=null;render();return;}
+    if(a==="bank-open-app"){setStatus("Opening "+t.getAttribute("data-name")+" in Bank Account Management…");return;}
     if(a==="mys-config"){var wc0=find(id);modal={type:"mysconfig",id:id,q:"",draft:(wc0.selected||[]).slice()};modalMounted=false;pop=null;render();return;}
     if(a==="mys-add"){var wa2=find(modal.id);var qid=t.getAttribute("data-q");if(wa2&&modal.draft.indexOf(qid)<0)modal.draft.push(qid);renderModal();return;}
     if(a==="mys-remove"){var qidr=t.getAttribute("data-q");if(modal)modal.draft=modal.draft.filter(function(x){return x!==qidr;});renderModal();return;}
